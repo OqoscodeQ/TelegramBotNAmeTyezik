@@ -14,12 +14,12 @@ TOKEN = os.getenv("TOKEN", "7784851665:AAH-AkFYh1tgcYxG9ti4DZJvogAseC5hVAM")
 
 # Список товаров с URL-адресами изображений
 PRODUCTS = [
-    {"name": "Буст макс ранга", "price": "200 руб", "image": "https://imgur.com/a/w1uDiv5"},
+    {"name": "Буст макс ранга", "price": "200 руб", "image": "https://via.placeholder.com/150?text=Max+Rank+Boost"},
     {"name": "Буст мифик лиги", "price": "200 руб",
-     "image": "https://imgur.com/a/PJUvEkD"},
-    {"name": "Буст кубки от 0 до 500 и от 500 до 1000  кубков", "price": " от 100 рублей до 150 рублей (цена договорная)",
-     "image": "https://imgur.com/a/kmXsW2M"},
-    {"name": "Буст квестов", "price": "150 руб", "image": "https://imgur.com/a/ZmAQjd6"},
+     "image": "https://via.placeholder.com/150?text=Mythic+League+Boost"},
+    {"name": "Буст кубки от 0 до 500 и от 500 до 1000 кубков", "price": "от 100 рублей до 150 рублей (цена договорная)",
+     "image": "https://via.placeholder.com/150?text=Cups+Boost"},
+    {"name": "Буст квестов", "price": "150 руб", "image": "https://via.placeholder.com/150?text=Quests+Boost"},
     {"name": "Предложить свою услугу", "price": "цену обговорим",
      "image": "https://via.placeholder.com/150?text=Custom+Service"}
 ]
