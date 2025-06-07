@@ -1,4 +1,7 @@
 import logging
+import os
+import signal
+import asyncio
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Application, CommandHandler, CallbackQueryHandler, ContextTypes
 
@@ -6,15 +9,19 @@ from telegram.ext import Application, CommandHandler, CallbackQueryHandler, Cont
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# Токен бота
-TOKEN = "7784851665:AAH-AkFYh1tgcYxG9ti4DZJvogAseC5hVAM"
+# Токен бота (рекомендуется использовать переменную окружения)
+TOKEN = os.getenv("TOKEN", "7784851665:AAH-AkFYh1tgcYxG9ti4DZJvogAseC5hVAM")
 
-# Список товаров
+# Список товаров с URL-адресами изображений
 PRODUCTS = [
-    {"name": "Буст макс ранга", "price": "200 руб", "image": None},
-    {"name": "Буст мифик лиги", "price": "200 руб", "image": None},
-    {"name": "Буст кубки от 100 кубков", "price": "от 50 рублей (цена договорная)", "image": None},
-    {"name": "Предложить свою услугу", "price": "цену обговорим", "image": None}
+    {"name": "Буст макс ранга", "price": "200 руб", "image": "https://imgur.com/a/w1uDiv5"},
+    {"name": "Буст мифик лиги", "price": "200 руб",
+     "image": "https://imgur.com/a/PJUvEkD"},
+    {"name": "Буст кубки от 0 до 500 и от 500 до 1000  кубков", "price": " от 100 рублей до 150 рублей (цена договорная)",
+     "image": "https://imgur.com/a/kmXsW2M"},
+    {"name": "Буст квестов", "price": "150 руб", "image": "https://imgur.com/a/ZmAQjd6"},
+    {"name": "Предложить свою услугу", "price": "цену обговорим",
+     "image": "https://via.placeholder.com/150?text=Custom+Service"}
 ]
 
 
@@ -45,13 +52,19 @@ async def button_callback(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
 
         for i, product in enumerate(PRODUCTS, 1):
             message = f"{i}. {product['name']} - {product['price']}"
-            # Если в будущем добавите изображения, можно будет раскомментировать
-            # if product['image']:
-            #     await query.message.reply_photo(photo=product['image'], caption=message)
-            # else:
-            await query.message.reply_text(message)
+            # Создаем inline-клавиатуру для каждой картинки
+            keyboard = [[InlineKeyboardButton("Выбрать", callback_data=f"product_{i}")]]
+            reply_markup = InlineKeyboardMarkup(keyboard)
+            if product['image']:
+                await query.message.reply_photo(
+                    photo=product['image'],
+                    caption=message,
+                    reply_markup=reply_markup
+                )
+            else:
+                await query.message.reply_text(message)
 
-        # Создаем клавиатуру с товарами
+        # Создаем общую клавиатуру с товарами
         keyboard = [
             [InlineKeyboardButton(product['name'], callback_data=f"product_{i}")]
             for i, product in enumerate(PRODUCTS)
@@ -72,7 +85,7 @@ async def button_callback(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
         await query.message.reply_text(requisites_message)
 
 
-def main() -> None:
+async def main() -> None:
     """Запуск бота"""
     application = Application.builder().token(TOKEN).build()
 
@@ -80,9 +93,21 @@ def main() -> None:
     application.add_handler(CommandHandler("start", start))
     application.add_handler(CallbackQueryHandler(button_callback))
 
-    # Запускаем бота
-    application.run_polling(allowed_updates=Update.ALL_TYPES)
+    # Запускаем бота в режиме polling
+    await application.initialize()
+    await application.start()
+    await application.updater.start_polling(allowed_updates=Update.ALL_TYPES)
+
+    # Ожидаем сигнал завершения
+    try:
+        while True:
+            await asyncio.sleep(3600)  # Спим 1 час, чтобы не нагружать CPU
+    except KeyboardInterrupt:
+        logger.info("Получен сигнал завершения, останавливаем бот...")
+        await application.updater.stop()
+        await application.stop()
+        await application.shutdown()
 
 
 if __name__ == "__main__":
-    main()
+    asyncio.run(main())
