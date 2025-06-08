@@ -12,7 +12,7 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
 logger = logging.getLogger(__name__)
 
 # Токен бота
-TOKEN = os.getenv("TOKEN", "7784851665:AAH-AkFYh1tgcYxG9ti4DZJvogAseC5hVAM")
+TOKEN = os.getenv("TOKEN", "7996047867:AAG0diMuw5uhqGUVSYNcUPAst8hm2R_G47Q")
 
 # Список товаров с прямыми ссылками на изображения
 PRODUCTS = [
